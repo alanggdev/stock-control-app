@@ -38,10 +38,10 @@ class _AuthScreenState extends State<AuthScreen> {
               child: Column(
                 children: [
                   Center(
-                    child: authButton('Iniciar Sesión', '/login', FontAwesomeIcons.rightToBracket),
+                    child: authButton(context, 'Iniciar Sesión', '/sign_in', FontAwesomeIcons.rightToBracket),
                   ),
                   Center(
-                    child: authButton('Crear Cuenta', '/register', FontAwesomeIcons.userPlus),
+                    child: authButton(context, 'Crear Cuenta', '/sign_in', FontAwesomeIcons.userPlus),
                   ),
                 ],
               ),
