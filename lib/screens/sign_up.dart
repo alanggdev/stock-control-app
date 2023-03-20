@@ -4,28 +4,30 @@ import 'package:stock_control/screens/components/app_bar.dart';
 import 'package:stock_control/screens/components/buttons.dart';
 import 'package:stock_control/screens/components/input_field.dart';
 
-class SignIn extends StatefulWidget {
-  const SignIn({super.key});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignUpState extends State<SignUp> {
   final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passController = TextEditingController();
+  final confirmPassController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarAuthScreen('Iniciar Sesión'),
+      appBar: appBarAuthScreen('Crear cuenta'),
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(40),
         child: Column(
           children: [
             Expanded(
-              flex: 1,
+              flex: 0,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -43,7 +45,7 @@ class _SignInState extends State<SignIn> {
                   const Padding(
                     padding: EdgeInsets.only(top: 20),
                     child: Text(
-                      '¡Bienvenido de vuelta!',
+                      '¡Bienvenido!',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -61,7 +63,7 @@ class _SignInState extends State<SignIn> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 30, left: 2),
-                      child: inputLabel('Nombre de Usuario'),
+                      child: inputLabel('Nombre de usuario'),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15),
@@ -69,32 +71,33 @@ class _SignInState extends State<SignIn> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 2),
-                      child: inputLabel('Contraseña'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: textField('Clave', passController),
+                      child: inputLabel('Correo electrónico'),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15),
-                      child: signInButton(usernameController, passController),
+                      child: textField('Correo electrónico', emailController),
                     ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    //   children: <Widget>[
-                    //     const Text("¿Olvidaste tu contraseña?"),
-                    //     TextButton(
-                    //       onPressed: () {},
-                    //       child: const Text(
-                    //         'Recuperar Ahora',
-                    //         style: TextStyle(
-                    //             fontSize: 16,
-                    //             fontWeight: FontWeight.bold,
-                    //             color: Color(0xfff90024)),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 2),
+                      child: inputLabel('Contraseña'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      child: textField('Clave', passController),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 2),
+                      child: inputLabel('Confirmar contraseña'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: textField('Confirmar clave', confirmPassController),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      child: signUpButton(
+                          usernameController, emailController, passController, confirmPassController),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(top: 20, bottom: 20),
                       child: dividerLine(),

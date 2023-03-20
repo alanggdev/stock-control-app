@@ -21,15 +21,32 @@ class _AuthScreenState extends State<AuthScreen> {
             Expanded(
               flex: 2,
               child: Center(
-                child: Container(
-                  width: 250,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset('assets/images/logo.png', width: 250),
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 250,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.white),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset('assets/images/logo.png', width: 250),
+                      ),
+                    ),
+                    const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Text(
+                      '¡Bienvenido!',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff40bcd8),
+                      ),
+                    ),
+                  )
+                  ],
                 ),
               ),
             ),
@@ -41,7 +58,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: authButton(context, 'Iniciar Sesión', '/sign_in', FontAwesomeIcons.rightToBracket),
                   ),
                   Center(
-                    child: authButton(context, 'Crear Cuenta', '/sign_in', FontAwesomeIcons.userPlus),
+                    child: authButton(context, 'Crear Cuenta', '/sign_up', FontAwesomeIcons.userPlus),
                   ),
                 ],
               ),

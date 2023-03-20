@@ -63,3 +63,33 @@ SizedBox signInButton(TextEditingController usernameController, TextEditingContr
     ),
   );
 }
+
+SizedBox signUpButton(TextEditingController usernameController, TextEditingController emailController, TextEditingController passController, TextEditingController confirmPassController) {
+  return SizedBox(
+    width: 150,
+    height: 40,
+    child: TextButton.icon(
+      icon: const FaIcon(
+        FontAwesomeIcons.userPlus,
+        color: Colors.white,
+      ),
+      onPressed: () {
+        print('Sign Up Data:');
+        print(usernameController.text);
+        print(emailController.text);
+        print(passController.text);
+      },
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xffff8e00),
+        shape: (RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        )),
+      ),
+      label: const Text(
+        'Registrar',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      ),
+    ),
+  );
+}

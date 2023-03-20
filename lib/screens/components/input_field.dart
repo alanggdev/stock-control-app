@@ -21,12 +21,15 @@ TextField textField(String text, TextEditingController fieldContoller) {
     controller: fieldContoller,
     decoration: InputDecoration(
       filled: true,
-      fillColor: Colors.grey[300],
-      hintStyle: TextStyle(color: Colors.grey[800]),
+      fillColor: Color.fromARGB(173, 219, 219, 219),
       hintText: text,
-      border: OutlineInputBorder(
-        borderSide: BorderSide.none,
-        borderRadius: BorderRadius.circular(20),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: const BorderSide(color: Color(0xff40bcd8), width: 5),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: const BorderSide(color: Color(0xffff8e00), width: 10),
+        borderRadius: BorderRadius.circular(5),
       ),
     ),
   );
