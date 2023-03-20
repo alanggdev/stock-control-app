@@ -49,3 +49,25 @@ Row dividerLine() {
     ],
   );
 }
+
+Expanded titleMenu(IconData icon, String title) {
+  return Expanded(
+    flex: 0,
+    child: Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: Row(
+        children: [
+          Icon(icon, size: 24), // El icono que desea agregar
+          const SizedBox(width: 10), // Separación entre el icono y el texto
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}

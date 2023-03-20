@@ -35,7 +35,10 @@ Padding authButton(
   );
 }
 
-SizedBox signInButton(TextEditingController usernameController, TextEditingController passController) {
+SizedBox signInButton(
+    BuildContext context,
+    TextEditingController usernameController,
+    TextEditingController passController) {
   return SizedBox(
     width: 150,
     height: 40,
@@ -48,6 +51,7 @@ SizedBox signInButton(TextEditingController usernameController, TextEditingContr
         print('Sign In Data:');
         print(usernameController.text);
         print(passController.text);
+        Navigator.pushReplacementNamed(context, '/list_screen');
       },
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
@@ -64,7 +68,11 @@ SizedBox signInButton(TextEditingController usernameController, TextEditingContr
   );
 }
 
-SizedBox signUpButton(TextEditingController usernameController, TextEditingController emailController, TextEditingController passController, TextEditingController confirmPassController) {
+SizedBox signUpButton(
+    TextEditingController usernameController,
+    TextEditingController emailController,
+    TextEditingController passController,
+    TextEditingController confirmPassController) {
   return SizedBox(
     width: 150,
     height: 40,
@@ -78,6 +86,7 @@ SizedBox signUpButton(TextEditingController usernameController, TextEditingContr
         print(usernameController.text);
         print(emailController.text);
         print(passController.text);
+        print(confirmPassController.text);
       },
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
