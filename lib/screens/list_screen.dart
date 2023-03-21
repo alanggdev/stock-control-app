@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stock_control/screens/components/app_bar.dart';
 import 'package:stock_control/screens/components/label_inventory.dart';
+import 'package:stock_control/services/data.dart';
 
 class ListScreen extends StatefulWidget {
   const ListScreen({super.key});
@@ -10,60 +11,8 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
+  int _currentIndex = 0;
   int _selectedOptionIndex = 0;
-  final List<Widget> _pages = [
-    Column(
-      children: [
-        titleMenu(Icons.inventory, 'Inventarios'),
-        Expanded(
-          flex: 1,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                inventoryLabel(Icons.store, 'Tienda Villaflores (Owner)'),
-                inventoryLabel(Icons.business_center, 'Tienda Suchiapa (Admin)'),
-                inventoryLabel(Icons.shopping_cart, 'Tienda UPChiapas (Seller)'),
-                inventoryLabel(Icons.store, 'Tienda Villaflores (Owner)'),
-                inventoryLabel(Icons.business_center, 'Tienda Suchiapa (Admin)'),
-                inventoryLabel(Icons.shopping_cart, 'Tienda UPChiapas (Seller)'),
-                inventoryLabel(Icons.store, 'Tienda Villaflores (Owner)'),
-                inventoryLabel(Icons.business_center, 'Tienda Suchiapa (Admin)'),
-                inventoryLabel(Icons.shopping_cart, 'Tienda UPChiapas (Seller)'),
-                inventoryLabel(Icons.store, 'Tienda Villaflores (Owner)'),
-                inventoryLabel(Icons.business_center, 'Tienda Suchiapa (Admin)'),
-                inventoryLabel(Icons.shopping_cart, 'Tienda UPChiapas (Seller)'),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton.icon(
-            icon: const Icon(Icons.add_circle_outline),
-            onPressed: () {},
-            label: const Text(
-              'Añadir Inventario',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: const Color(0xffff8e00),
-            ),
-          ),
-        ),
-      ],
-    ),
-    Column(children: [
-      titleMenu(Icons.account_box, 'Cuenta'),
-    ]),
-    Column(children: [
-      titleMenu(Icons.notifications, 'Notificaciones'),
-    ]),
-    Column(children: [
-      titleMenu(Icons.settings, 'Configuración'),
-    ]),
-  ];
 
   void _onOptionSelected(int index) {
     setState(() {
@@ -101,25 +50,45 @@ class _ListScreenState extends State<ListScreen> {
                 leading: const Icon(Icons.inventory),
                 title: const Text('Inventarios'),
                 selected: _selectedOptionIndex == 0,
-                onTap: () => _onOptionSelected(0),
+                onTap: () {
+                  _onOptionSelected(0);
+                  setState(() {
+                    _currentIndex = 0;
+                  });
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.account_box),
                 title: const Text('Cuenta'),
                 selected: _selectedOptionIndex == 1,
-                onTap: () => _onOptionSelected(1),
+                onTap: () {
+                  _onOptionSelected(1);
+                  setState(() {
+                    _currentIndex = 1;
+                  });
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.notifications),
                 title: const Text('Notificaciones'),
                 selected: _selectedOptionIndex == 2,
-                onTap: () => _onOptionSelected(2),
+                onTap: () {
+                  _onOptionSelected(2);
+                  setState(() {
+                    _currentIndex = 2;
+                  });
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.settings),
                 title: const Text('Configuración'),
                 selected: _selectedOptionIndex == 3,
-                onTap: () => _onOptionSelected(3),
+                onTap: () {
+                  _onOptionSelected(3);
+                  setState(() {
+                    _currentIndex = 3;
+                  });
+                },
               ),
               const Spacer(),
               Container(
@@ -127,12 +96,13 @@ class _ListScreenState extends State<ListScreen> {
                 child: ListTile(
                   leading: const Icon(
                     Icons.logout,
-                    color: Colors.black,
+                    color: Colors.white,
                   ),
                   title: const Text(
                     'Cerrar sesión',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: Colors.white
                     ),
                   ),
                   onTap: () {
@@ -147,8 +117,77 @@ class _ListScreenState extends State<ListScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(25),
-        child: _pages[_selectedOptionIndex],
+        child: _buildBody(context),
+        // child: _pages[_selectedOptionIndex],
       ),
     );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    switch (_currentIndex) {
+      case 0:
+        return inventoryBuild(context);
+      case 1:
+        return accountBuild(context);
+      case 2:
+        return notificationBuild(context);
+      case 3:
+        return settingsBuild(context);
+      default:
+        return Container();
+    }
+  }
+
+  Widget inventoryBuild(BuildContext context) {
+    return Column(
+      children: [
+        titleMenu(Icons.inventory, 'Inventarios'),
+        Expanded(
+          flex: 1,
+          child: SingleChildScrollView(
+            child: Column(
+              children: getDataInventory()
+                  .map((element) => inventoryLabel(
+                      context, Icons.store, "${element["name"]}", element))
+                  .toList(),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.add_circle_outline),
+            onPressed: () {},
+            label: const Text(
+              'Añadir Inventario',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: const Color(0xffff8e00),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget accountBuild(BuildContext context) {
+    return Column(children: [
+      titleMenu(Icons.account_box, 'Cuenta'),
+    ]);
+  }
+
+  Widget notificationBuild(BuildContext context) {
+    return Column(children: [
+      titleMenu(Icons.notifications, 'Notificaciones'),
+    ]);
+  }
+
+  Widget settingsBuild(BuildContext context) {
+    return Column(children: [
+      titleMenu(Icons.settings, 'Configuración'),
+    ]);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-SafeArea inventoryLabel(IconData icon, String title) {
+SafeArea inventoryLabel(BuildContext context, IconData icon, String title, Map<String, dynamic> data) {
   return SafeArea(
     child: Padding(
       padding: const EdgeInsets.only(bottom: 15),
@@ -16,7 +16,9 @@ SafeArea inventoryLabel(IconData icon, String title) {
             ),
             backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, '/inv_screen', arguments: data);
+          },
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Row(
