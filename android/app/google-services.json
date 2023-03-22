@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "563115080969",
+    "project_id": "stock-control-ad6be",
+    "storage_bucket": "stock-control-ad6be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563115080969:android:6b313a54446757da18a7d8",
+        "android_client_info": {
+          "package_name": "com.example.stock_control"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "563115080969-76cp0g2s4filhtgc516nh33qc30kd8sm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.stock_control",
+            "certificate_hash": "87c993b7ba192b372ecf566e0e38afd4563dc984"
+          }
+        },
+        {
+          "client_id": "563115080969-gp4htc9hvr6s2987onp864e3qb2ogc09.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.stock_control",
+            "certificate_hash": "9140bb416a0880574c08d80a5adc3fd3d287f70b"
+          }
+        },
+        {
+          "client_id": "563115080969-kqf75a9fhs1v1e33k88c58eea80bfgv6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7wPnzt1B5WS8V4wUU-wkoPgsO6jfqBBw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "563115080969-b8rgaq38783r32v62ba3kgtf0lo82mv2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

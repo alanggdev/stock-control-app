@@ -101,9 +101,7 @@ class _ListScreenState extends State<ListScreen> {
                   title: const Text(
                     'Cerrar sesión',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white
-                    ),
+                        fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   onTap: () {
                     Navigator.pushNamedAndRemoveUntil(
@@ -158,7 +156,9 @@ class _ListScreenState extends State<ListScreen> {
           height: 50,
           child: ElevatedButton.icon(
             icon: const Icon(Icons.add_circle_outline),
-            onPressed: () {},
+            onPressed: () {
+              createInventory(context);
+            },
             label: const Text(
               'Añadir Inventario',
               style: TextStyle(fontWeight: FontWeight.bold),

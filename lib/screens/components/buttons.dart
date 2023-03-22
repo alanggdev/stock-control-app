@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:stock_control/services/auth_request.dart';
 
 Padding authButton(
     BuildContext context, String title, String route, IconData icon) {
@@ -36,9 +37,10 @@ Padding authButton(
 }
 
 SizedBox signInButton(
-    BuildContext context,
-    TextEditingController usernameController,
-    TextEditingController passController) {
+  BuildContext context,
+  TextEditingController usernameController,
+  TextEditingController passController,
+) {
   return SizedBox(
     width: 150,
     height: 40,
@@ -48,10 +50,28 @@ SizedBox signInButton(
         color: Colors.white,
       ),
       onPressed: () {
-        print('Sign In Data:');
-        print(usernameController.text);
-        print(passController.text);
-        Navigator.pushReplacementNamed(context, '/list_screen');
+        if (usernameController.text.isEmpty || passController.text.isEmpty) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Campos vacíos', style: TextStyle(fontWeight: FontWeight.bold),),
+                content: const Text(
+                    'Por favor, ingrese su nombre de usuario y contraseña'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          signInUsername(
+              context, usernameController.text, usernameController.text);
+          Navigator.pushReplacementNamed(context, '/list_screen');
+        }
       },
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
