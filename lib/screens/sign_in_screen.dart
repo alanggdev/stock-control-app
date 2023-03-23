@@ -100,7 +100,9 @@ class _SignInState extends State<SignIn> {
                       child: dividerLine(),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/sign_up');
+                      },
                       icon: const FaIcon(
                         FontAwesomeIcons.google,
                         color: Colors.white,

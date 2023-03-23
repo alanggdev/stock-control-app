@@ -2,48 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:stock_control/screens/inventory_screen.dart';
 import 'package:stock_control/services/inv_request.dart';
 
-Container inventoryLabel(
-    BuildContext context, IconData icon, String title, dynamic objeto) {
-  return Container(
-    child: Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: SizedBox(
-        height: 60,
-        child: TextButton(
-          style: ButtonStyle(
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: const BorderSide(width: 2, color: Colors.grey),
-              ),
+Padding inventoryLabel(
+    BuildContext context, IconData icon, String title, dynamic objeto, String accessToken) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 15),
+    child: SizedBox(
+      height: 60,
+      child: TextButton(
+        style: ButtonStyle(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: const BorderSide(width: 2, color: Colors.grey),
             ),
-            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
           ),
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => InventoryScreen(objeto)));
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(icon),
-                    const SizedBox(width: 15),
-                    Text(
-                      title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                const Icon(Icons.keyboard_double_arrow_right),
-              ],
-            ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+        ),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => InventoryScreen(objeto, accessToken)));
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(icon),
+                  const SizedBox(width: 15),
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              const Icon(Icons.keyboard_double_arrow_right),
+            ],
           ),
         ),
       ),
@@ -51,7 +49,8 @@ Container inventoryLabel(
   );
 }
 
-Future<dynamic> createInventory(BuildContext context, int idOwner, String accessToken) {
+Future<dynamic> createInventory(
+    BuildContext context, int idOwner, String accessToken) {
   TextEditingController nameInvController = TextEditingController();
   return showDialog(
     context: context,
@@ -122,5 +121,93 @@ Future<dynamic> createInventory(BuildContext context, int idOwner, String access
         ],
       );
     },
+  );
+}
+
+Padding cardConfigSensible(BuildContext context, String title, String stitle,
+    String action, String route, dynamic product, String accessToken) {
+  return Padding(
+    padding: const EdgeInsets.only(left: 8, right: 8),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              stitle,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
+        OutlinedButton(
+          onPressed: () {
+            if (action == 'Eliminar') {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text(
+                      'Confirmación',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    content: const Text(
+                        '¿Está seguro de que desea eliminar este elemento?'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Cancelar', style: TextStyle(color: Colors.black),),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                              color: Colors.red), // borde del botón
+                          backgroundColor:
+                              Colors.red, // color de fondo del botón
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        child: const Text(
+                          'Eliminar',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () {
+                          // Navigator.of(context).pop();
+                          deleteInventory(context, accessToken, product['id']);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            }else{
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            }
+          },
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: Colors.red), // borde del botón
+            backgroundColor: Colors.white, // color de fondo del botón
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          child: Text(
+            action,
+            style: const TextStyle(
+              color: Colors.red, // color del texto
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    ),
   );
 }

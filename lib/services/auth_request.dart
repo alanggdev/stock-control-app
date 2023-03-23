@@ -62,7 +62,8 @@ Future<void> signOut(BuildContext context, String accessToken) async {
     data: jsonEncode(data),
   )
       .then(((response) {
-    Navigator.pushNamedAndRemoveUntil(context, '/auth_scren', (route) => false);
+    // Navigator.pushNamedAndRemoveUntil(context, '/auth_scren', (route) => false);
+    Navigator.pushReplacementNamed(context, '/auth_scren');
   })).catchError(((e) {
     showDialog(
       context: context,

@@ -25,7 +25,7 @@ Padding authButton(
           )),
         ),
         onPressed: () {
-          Navigator.pushNamed(context, route);
+          Navigator.pushReplacementNamed(context, route);
         },
         label: Text(
           title,

@@ -28,9 +28,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<void> _loadInventory() async {
     final listInvOwner = await getInventoryPerOwner(
-      widget.userData['pk'],
-      widget.accessToken,
-    );
+        widget.userData['pk'], widget.accessToken, context);
     setState(() {
       _listInvOwner = listInvOwner;
       _isLoading = false;
@@ -191,8 +189,8 @@ class _ListScreenState extends State<ListScreen> {
               children: _listInvOwner.isNotEmpty
                   ? [
                       for (var objeto in _listInvOwner)
-                        inventoryLabel(
-                            context, Icons.store, objeto["name"], objeto),
+                        inventoryLabel(context, Icons.store, objeto["name"],
+                            objeto, widget.accessToken),
                     ]
                   : [
                       const Text('La lista está vacía'),
@@ -216,7 +214,7 @@ class _ListScreenState extends State<ListScreen> {
             });
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: _selectedOptionIndex == 0 ? const Color.fromARGB(255, 148, 148, 148) : null,
+            backgroundColor: const Color.fromARGB(255, 148, 148, 148),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
