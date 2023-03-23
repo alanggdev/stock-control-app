@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:stock_control/screens/inventory_screen.dart';
 import 'package:stock_control/services/inv_request.dart';
 
-SafeArea inventoryLabel(BuildContext context, IconData icon, String title,
-    Map<String, dynamic> data) {
-  return SafeArea(
+Container inventoryLabel(
+    BuildContext context, IconData icon, String title, dynamic objeto) {
+  return Container(
     child: Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: SizedBox(
@@ -19,7 +20,10 @@ SafeArea inventoryLabel(BuildContext context, IconData icon, String title,
             backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
           ),
           onPressed: () {
-            // Navigator.pushNamed(context, '/inv_screen', arguments: data);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => InventoryScreen(objeto)));
           },
           child: Padding(
             padding: const EdgeInsets.all(10),
@@ -47,7 +51,7 @@ SafeArea inventoryLabel(BuildContext context, IconData icon, String title,
   );
 }
 
-Future<dynamic> createInventory(BuildContext context) {
+Future<dynamic> createInventory(BuildContext context, int idOwner, String accessToken) {
   TextEditingController nameInvController = TextEditingController();
   return showDialog(
     context: context,
@@ -80,7 +84,7 @@ Future<dynamic> createInventory(BuildContext context) {
             child: const Text('Cancelar'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               String text = nameInvController.text.trim();
               if (text.isNotEmpty) {
                 if (text.length > 25) {
@@ -91,8 +95,8 @@ Future<dynamic> createInventory(BuildContext context) {
                     ),
                   );
                 } else {
-                 newInventory(context, text);
-                  Navigator.of(context).pop(text);
+                  // Navigator.of(context).pop();
+                  await newInventory(context, accessToken, text, idOwner);
                 }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(

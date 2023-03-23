@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stock_control/screens/auth_screen.dart';
-import 'package:stock_control/screens/inventory_screen.dart';
-import 'package:stock_control/screens/list_screen.dart';
 import 'package:stock_control/screens/sign_in_screen.dart';
 import 'package:stock_control/screens/sign_up_screen.dart';
 
@@ -24,8 +22,8 @@ class Home extends StatelessWidget {
         '/auth_scren' : ((context) => const AuthScreen()),
         '/sign_in' : ((context) => const SignIn()),
         '/sign_up' : ((context) => const SignUp()),
-        '/list_screen' : ((context) => const ListScreen()),
-        '/inv_screen' : ((context) => const InventoryScreen()),
+        // '/list_screen' : ((context) => const ListScreen()),
+        // '/inv_screen' : ((context) => const InventoryScreen()),
       },
       home: const AuthScreen(),
     );

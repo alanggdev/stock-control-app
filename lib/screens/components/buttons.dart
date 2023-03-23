@@ -69,8 +69,7 @@ SizedBox signInButton(
           );
         } else {
           signInUsername(
-              context, usernameController.text, usernameController.text);
-          Navigator.pushReplacementNamed(context, '/list_screen');
+              context, usernameController.text, passController.text);
         }
       },
       style: ElevatedButton.styleFrom(
