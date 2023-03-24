@@ -171,34 +171,48 @@ class _InventoryScreenState extends State<InventoryScreen> {
         titleMenu(Icons.rule, 'Productos'),
         Expanded(
           child: ListView.builder(
-            itemCount: widget.product['products_name'].length,
+            itemCount:
+                _invDetail.length == 0 ? 0 : _invDetail['products_name'].length,
             itemBuilder: (context, i) {
               return Card(
                 child: ListTile(
                   leading: Icon(
-                    widget.product['products'][i].toString() != '0'
+                    _invDetail['products'][i].toString() != '0'
                         ? Icons.check_box
                         : Icons.disabled_by_default,
-                    color: widget.product['products'][i].toString() != '0'
+                    color: _invDetail['products'][i].toString() != '0'
                         ? Colors.green
                         : Colors.red,
                   ),
-                  title: Text(widget.product['products_name'][i]),
-                  subtitle: Text(
-                      'Cant.: ${widget.product['products'][i].toString()}'),
+                  title: Text(
+                    _invDetail['products_name'][i],
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle:
+                      Text('Cant.: ${_invDetail['products'][i].toString()}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          // acción al presionar el botón
-                        },
+                        icon: const Icon(Icons.remove),
+                        onPressed: _invDetail['products'][i] > 0
+                            ? () {
+                                setState(() {
+                                  _invDetail['products'][i]--;
+                                });
+                              }
+                            : null,
+                      ),
+                      Text(
+                        _invDetail['products'][i].toString(),
+                        style: const TextStyle(fontSize: 16),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete),
+                        icon: const Icon(Icons.add),
                         onPressed: () {
-                          // acción al presionar el botón
+                          setState(() {
+                            _invDetail['products'][i]++;
+                          });
                         },
                       ),
                     ],
@@ -231,6 +245,24 @@ class _InventoryScreenState extends State<InventoryScreen> {
               Icon(Icons.refresh),
               SizedBox(width: 12),
               Text('Actualizar lista'),
+            ],
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            updateCantProduct(context, widget.accessToken, _invDetail);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Row(
+            children: const [
+              Icon(Icons.save_as),
+              SizedBox(width: 12),
+              Text('Guardar y Actualizar lista'),
             ],
           ),
         ),

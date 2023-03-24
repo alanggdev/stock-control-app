@@ -293,3 +293,55 @@ Future<void> removeProduct(BuildContext context, String accessToken,
     }));
   }
 }
+
+Future<void> updateCantProduct(
+    BuildContext context, String accessToken, dynamic inventory) async {
+  List<dynamic> resProductsName = inventory['products_name'];
+  List<dynamic> resProducts = inventory['products'];
+  int idInventory = inventory['id'];
+
+  var data = {"products_name": resProductsName, "products": resProducts};
+
+  Dio dio = Dio();
+
+  await dio
+      .patch(
+    '$baseURL/api/inventory/detail/$idInventory',
+    options: Options(headers: {
+      HttpHeaders.contentTypeHeader: "application/json",
+      HttpHeaders.authorizationHeader: "Bearer $accessToken"
+    }),
+    data: jsonEncode(data),
+  )
+      .then(((response) {
+    print("Product Updated Cant");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+          'Cambios guardados y actualizados',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.amber[800],
+      ),
+    );
+  })).catchError(((e) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Error',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Text(e.toString()),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }));
+}
