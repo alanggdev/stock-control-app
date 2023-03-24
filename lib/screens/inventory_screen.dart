@@ -169,7 +169,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
     return Column(
       children: [
         titleMenu(Icons.rule, 'Productos'),
-        Text(_invDetail.toString()),
         Expanded(
           child: ListView.builder(
             itemCount: widget.product['products_name'].length,
@@ -242,6 +241,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Widget productEdit(BuildContext context) {
     return Column(
       children: [
+        // Text(_invDetail.toString()),
         titleMenu(Icons.edit, 'Editar productos'),
         Expanded(
           child: ListView.builder(
@@ -261,8 +261,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     _invDetail['products_name'][i],
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(
-                      'Cant.: ${_invDetail['products'][i].toString()}'),
+                  subtitle:
+                      Text('Cant.: ${_invDetail['products'][i].toString()}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -272,7 +272,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           color: Colors.red,
                         ),
                         onPressed: () {
-                          // acción al presionar el botón
+                          removeProductLabel(
+                              context,
+                              widget.accessToken,
+                              int.parse(_invDetail['id'].toString()),
+                              _invDetail['products_name'][i]);
                         },
                       ),
                     ],
@@ -321,7 +325,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           ),
           child: Row(
             children: const [
-              Icon(Icons.refresh),
+              Icon(Icons.add),
               SizedBox(width: 12),
               Text('Agregar producto'),
             ],

@@ -216,7 +216,7 @@ Padding cardConfigSensible(BuildContext context, String title, String stitle,
   );
 }
 
-Future<dynamic> addProductLabel(
+Future<void> addProductLabel(
     BuildContext context, String accessToken, int idInventory) {
   TextEditingController productController = TextEditingController();
   TextEditingController productCantController = TextEditingController();
@@ -270,39 +270,95 @@ Future<dynamic> addProductLabel(
           ElevatedButton(
             onPressed: () async {
               String text = productController.text.trim();
-              int productCantInt = int.parse(productCantController.text);
-              if (text.isNotEmpty && productCantInt > 0) {
-                if (text.length > 25) {
+              String cantText = productCantController.text.trim();
+              int productCantInt;
+
+              if (cantText.isNotEmpty) {
+                try {
+                  productCantInt = int.parse(cantText);
+                } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content:
-                          Text('Nombre de producto o cantidad no permitida.'),
+                      content: Text('La cantidad debe ser un número entero.'),
+                      backgroundColor: Colors.red,
                     ),
                   );
-                } else {
-                  // Navigator.of(context).pop();
-                  addProduct(context, accessToken, idInventory, text, productCantInt);
+                  return; // Salir de la función si no se puede convertir a int.
+                }
+                if (productCantInt <= 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('La cantidad debe ser mayor a cero.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return; // Salir de la función si es menor o igual a cero.
                 }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
+                    content: Text('La cantidad no puede estar vacía.'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return; // Salir de la función si está vacía.
+              }
+
+              if (text.isNotEmpty && text.length <= 25) {
+                addProduct(
+                    context, accessToken, idInventory, text, productCantInt);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
                     content: Text(
-                      'Los campos no pueden estar vacíos o no son válidos.',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                        'El nombre del producto no puede estar vacío o superar los 25 caracteres.'),
                     backgroundColor: Colors.red,
                   ),
                 );
               }
             },
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: const Color(0xffff8e00),
-              shape: (RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              )),
+            child: const Text('Guardar'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<dynamic> removeProductLabel(BuildContext context, String accessToken,
+    int idInventory, String nameProduct) {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirmar'),
+        content: const Text('¿Está seguro que desea eliminar el producto?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.black),
             ),
-            child: const Text('Agregar'),
+          ),
+          ElevatedButton(
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.red), // borde del botón
+              backgroundColor: Colors.white, // color de fondo del botón
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
+            onPressed: () {
+              removeProduct(context, accessToken, idInventory, nameProduct);
+            },
+            child: const Text(
+              'Eliminar',
+              style: TextStyle(
+                color: Colors.red, // color del texto
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       );

@@ -234,9 +234,62 @@ Future<void> addProduct(BuildContext context, String accessToken,
         },
       );
     }));
-
-    print(data);
   } else {
     print("Ya existe el contenido");
+  }
+}
+
+Future<void> removeProduct(BuildContext context, String accessToken,
+    int idInventory, String nameProduct) async {
+  dynamic invDetail = await getInventory(context, accessToken, idInventory);
+
+  List<dynamic> resProductsName = invDetail['products_name'];
+  List<dynamic> resProducts = invDetail['products'];
+
+  int indexRemove = resProductsName.indexOf(nameProduct);
+  print(indexRemove);
+
+  if (indexRemove >= 0) {
+    resProductsName.removeAt(indexRemove);
+    resProducts.removeAt(indexRemove);
+
+    var data = {"products_name": resProductsName, "products": resProducts};
+
+    print(data);
+
+    Dio dio = Dio();
+
+    await dio
+        .patch(
+      '$baseURL/api/inventory/detail/$idInventory',
+      options: Options(headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+        HttpHeaders.authorizationHeader: "Bearer $accessToken"
+      }),
+      data: jsonEncode(data),
+    )
+        .then(((response) {
+      print("Product Deleted");
+      Navigator.pop(context);
+    })).catchError(((e) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Error',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Text(e.toString()),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Ok'),
+              ),
+            ],
+          );
+        },
+      );
+    }));
   }
 }
