@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stock_control/screens/list_screen.dart';
 
@@ -18,9 +19,11 @@ Future<void> signInUsername(
         Options(headers: {HttpHeaders.contentTypeHeader: "application/json"}),
     data: jsonEncode(data),
   )
-      .then(((response) {
+      .then(((response) async {
     dynamic userData = jsonDecode(response.toString());
-    // print(userData['user']);
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('localUserData', jsonEncode(userData));
+    // ignore: use_build_context_synchronously
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -61,8 +64,9 @@ Future<void> signOut(BuildContext context, String accessToken) async {
     }),
     data: jsonEncode(data),
   )
-      .then(((response) {
-    // Navigator.pushNamedAndRemoveUntil(context, '/auth_scren', (route) => false);
+      .then(((response) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('localUserData');
     Navigator.pushReplacementNamed(context, '/auth_scren');
   })).catchError(((e) {
     showDialog(
