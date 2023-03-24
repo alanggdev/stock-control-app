@@ -105,11 +105,11 @@ class _SignUpState extends State<SignUp> {
                     ElevatedButton.icon(
                       onPressed: () {Navigator.pushReplacementNamed(context, '/sign_in');},
                       icon: const FaIcon(
-                        FontAwesomeIcons.google,
+                        FontAwesomeIcons.rightToBracket,
                         color: Colors.white,
                       ),
                       label: const Text(
-                        'Continuar con Google',
+                        'Iniciar Sesión',
                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       style: ElevatedButton.styleFrom(

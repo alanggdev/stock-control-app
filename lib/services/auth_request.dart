@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:stock_control/screens/list_screen.dart';
 
-String baseURL = 'https://3480-2806-10ae-1b-3b05-487b-a1ec-327f-c6c6.ngrok.io';
+String baseURL = 'http://3.138.119.212';
 
 Future<void> signInUsername(
     BuildContext context, String username, String password) async {
@@ -36,7 +36,7 @@ Future<void> signInUsername(
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           // ignore: prefer_const_constructors
-          content: Text(e.toString()),
+          content: Text('Verifique sus credenciales'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context),

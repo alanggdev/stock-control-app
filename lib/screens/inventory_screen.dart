@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stock_control/screens/components/app_bar.dart';
 import 'package:stock_control/screens/components/label_inventory.dart';
+import 'package:stock_control/services/inv_request.dart';
 
 class InventoryScreen extends StatefulWidget {
   final dynamic product;
@@ -13,6 +14,26 @@ class InventoryScreen extends StatefulWidget {
 
 class _InventoryScreenState extends State<InventoryScreen> {
   int _selectedIndex = 0;
+  bool _isLoading = true;
+  dynamic _invDetail = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDetailInventory();
+  }
+
+  Future<void> _loadDetailInventory() async {
+    final inventoryDetail = await getInventory(
+      context,
+      widget.accessToken,
+      widget.product['id'],
+    );
+    setState(() {
+      _invDetail = inventoryDetail;
+      _isLoading = false;
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -53,88 +74,37 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Widget _buildBody(BuildContext context) {
     switch (_selectedIndex) {
       case 0:
-        return Column(
+        return Stack(
           children: [
-            titleMenu(Icons.rule, 'Productos'),
-            Text(widget.product.toString()),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.product['products_name'].length,
-                itemBuilder: (context, i) {
-                  return Card(
-                    child: ListTile(
-                      leading: Icon(
-                        widget.product['products'][i].toString() != '0'
-                            ? Icons.check_box
-                            : Icons.disabled_by_default,
-                        color: widget.product['products'][i].toString() != '0'
-                            ? Colors.green
-                            : Colors.red,
-                      ),
-                      title: Text(widget.product['products_name'][i]),
-                      subtitle: Text(
-                          'Cant.: ${widget.product['products'][i].toString()}'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              // acción al presionar el botón
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              // acción al presionar el botón
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            productList(context),
+            if (_isLoading)
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 8),
+                    Text('Cargando...'),
+                  ],
+                ),
+              )
           ],
         );
       case 1:
-        return Column(
+        return Stack(
           children: [
-            titleMenu(Icons.edit, 'Editar productos'),
-            Text(widget.product.toString()),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 29, 177, 74),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            productEdit(context),
+            if (_isLoading)
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 8),
+                    Text('Cargando...'),
+                  ],
                 ),
-              ),
-              child: Row(
-                children: const [
-                  Icon(Icons.add_circle_outline),
-                  SizedBox(width: 12),
-                  Text('Agregar producto'),
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 148, 148, 148),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Row(
-                children: const [
-                  Icon(Icons.save),
-                  SizedBox(width: 12),
-                  Text('Guardar cambios'),
-                ],
-              ),
-            ),
+              )
           ],
         );
       case 2:
@@ -193,5 +163,171 @@ class _InventoryScreenState extends State<InventoryScreen> {
       default:
         return Container();
     }
+  }
+
+  Widget productList(BuildContext context) {
+    return Column(
+      children: [
+        titleMenu(Icons.rule, 'Productos'),
+        Text(_invDetail.toString()),
+        Expanded(
+          child: ListView.builder(
+            itemCount: widget.product['products_name'].length,
+            itemBuilder: (context, i) {
+              return Card(
+                child: ListTile(
+                  leading: Icon(
+                    widget.product['products'][i].toString() != '0'
+                        ? Icons.check_box
+                        : Icons.disabled_by_default,
+                    color: widget.product['products'][i].toString() != '0'
+                        ? Colors.green
+                        : Colors.red,
+                  ),
+                  title: Text(widget.product['products_name'][i]),
+                  subtitle: Text(
+                      'Cant.: ${widget.product['products'][i].toString()}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          // acción al presionar el botón
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          // acción al presionar el botón
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _selectedIndex = 0;
+              if (_selectedIndex == 0) {
+                setState(() {
+                  _isLoading = true;
+                });
+                _loadDetailInventory();
+              }
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 148, 148, 148),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Row(
+            children: const [
+              Icon(Icons.refresh),
+              SizedBox(width: 12),
+              Text('Actualizar lista'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget productEdit(BuildContext context) {
+    return Column(
+      children: [
+        titleMenu(Icons.edit, 'Editar productos'),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _invDetail['products_name'].length,
+            itemBuilder: (context, i) {
+              return Card(
+                child: ListTile(
+                  leading: Icon(
+                    _invDetail['products'][i].toString() != '0'
+                        ? Icons.check_box
+                        : Icons.disabled_by_default,
+                    color: _invDetail['products'][i].toString() != '0'
+                        ? Colors.green
+                        : Colors.red,
+                  ),
+                  title: Text(
+                    _invDetail['products_name'][i],
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                      'Cant.: ${_invDetail['products'][i].toString()}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
+                        onPressed: () {
+                          // acción al presionar el botón
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _selectedIndex = 1;
+              if (_selectedIndex == 1) {
+                setState(() {
+                  _isLoading = true;
+                });
+                _loadDetailInventory();
+              }
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 148, 148, 148),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Row(
+            children: const [
+              Icon(Icons.refresh),
+              SizedBox(width: 12),
+              Text('Actualizar lista'),
+            ],
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            addProductLabel(context, widget.accessToken,
+                int.parse(_invDetail['id'].toString()));
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Row(
+            children: const [
+              Icon(Icons.refresh),
+              SizedBox(width: 12),
+              Text('Agregar producto'),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

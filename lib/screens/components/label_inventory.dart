@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:stock_control/screens/inventory_screen.dart';
 import 'package:stock_control/services/inv_request.dart';
 
-Padding inventoryLabel(
-    BuildContext context, IconData icon, String title, dynamic objeto, String accessToken) {
+Padding inventoryLabel(BuildContext context, IconData icon, String title,
+    dynamic objeto, String accessToken) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 15),
     child: SizedBox(
@@ -160,7 +161,10 @@ Padding cardConfigSensible(BuildContext context, String title, String stitle,
                         '¿Está seguro de que desea eliminar este elemento?'),
                     actions: <Widget>[
                       TextButton(
-                        child: const Text('Cancelar', style: TextStyle(color: Colors.black),),
+                        child: const Text(
+                          'Cancelar',
+                          style: TextStyle(color: Colors.black),
+                        ),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -188,7 +192,7 @@ Padding cardConfigSensible(BuildContext context, String title, String stitle,
                   );
                 },
               );
-            }else{
+            } else {
               Navigator.of(context).popUntil((route) => route.isFirst);
             }
           },
@@ -209,5 +213,99 @@ Padding cardConfigSensible(BuildContext context, String title, String stitle,
         ),
       ],
     ),
+  );
+}
+
+Future<dynamic> addProductLabel(
+    BuildContext context, String accessToken, int idInventory) {
+  TextEditingController productController = TextEditingController();
+  TextEditingController productCantController = TextEditingController();
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Row(
+          children: const [
+            Icon(
+              Icons.create,
+            ), // Agrega un icono de advertencia al lado del título
+            SizedBox(width: 10), // Agrega un espacio entre el icono y el texto
+            Text(
+              'Agregar producto',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: SizedBox(
+          height: 125,
+          child: Column(
+            children: [
+              TextField(
+                controller: productController,
+                maxLength: 25, // Limita el número de caracteres a 25
+                decoration: const InputDecoration(
+                  hintText: 'Nombre del producto',
+                ),
+              ),
+              TextField(
+                controller: productCantController,
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+                decoration: const InputDecoration(
+                  hintText: 'Cantidad del producto',
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              String text = productController.text.trim();
+              int productCantInt = int.parse(productCantController.text);
+              if (text.isNotEmpty && productCantInt > 0) {
+                if (text.length > 25) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content:
+                          Text('Nombre de producto o cantidad no permitida.'),
+                    ),
+                  );
+                } else {
+                  // Navigator.of(context).pop();
+                  addProduct(context, accessToken, idInventory, text, productCantInt);
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Los campos no pueden estar vacíos o no son válidos.',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: const Color(0xffff8e00),
+              shape: (RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              )),
+            ),
+            child: const Text('Agregar'),
+          ),
+        ],
+      );
+    },
   );
 }

@@ -104,11 +104,11 @@ class _SignInState extends State<SignIn> {
                         Navigator.pushReplacementNamed(context, '/sign_up');
                       },
                       icon: const FaIcon(
-                        FontAwesomeIcons.google,
+                        FontAwesomeIcons.userPlus,
                         color: Colors.white,
                       ),
                       label: const Text(
-                        'Continuar con Google',
+                        'Crear Cuenta',
                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       style: ElevatedButton.styleFrom(

@@ -4,8 +4,50 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:stock_control/screens/inventory_screen.dart';
+import 'package:stock_control/services/data.dart';
 
-String baseURL = 'https://3480-2806-10ae-1b-3b05-487b-a1ec-327f-c6c6.ngrok.io';
+String baseURL = 'http://3.138.119.212';
+
+Future<dynamic> getInventory(
+    BuildContext context, String accessToken, int idInventory) async {
+  dynamic inventory = [];
+  final dio = Dio();
+
+  await dio
+      .get(
+    '$baseURL/api/inventory/detail/$idInventory',
+    options: Options(
+        headers: {HttpHeaders.authorizationHeader: "Bearer $accessToken"}),
+  )
+      .then(((response) {
+    dynamic args = jsonDecode(response.toString());
+    if (args['pay_load'] != 'Not found') {
+      print("Get detail");
+      inventory = args['pay_load'];
+    }
+  })).catchError(((e) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Error',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          // ignore: prefer_const_constructors
+          content: Text(e.toString()),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }));
+  return inventory;
+}
 
 Future<List<dynamic>> getInventoryPerOwner(
     int idOwner, String accessToken, BuildContext context) async {
@@ -22,6 +64,7 @@ Future<List<dynamic>> getInventoryPerOwner(
       .then(((response) {
     dynamic args = jsonDecode(response.toString());
     if (args['pay_load'] != 'Not found') {
+      print("GET DETAIL PER OWNER");
       listInvOwner = args['pay_load'];
     }
   })).catchError(((e) {
@@ -142,4 +185,58 @@ Future<void> deleteInventory(
       },
     );
   }));
+}
+
+Future<void> addProduct(BuildContext context, String accessToken,
+    int idInventory, String name, int cant) async {
+  dynamic invDetail = await getInventory(context, accessToken, idInventory);
+
+  List<dynamic> resProductsName = invDetail['products_name'];
+  List<dynamic> resProducts = invDetail['products'];
+
+  if (!resProductsName.contains(name)) {
+    print("No existe el contenido");
+    resProductsName.add(name);
+    resProducts.add(cant);
+    var data = {"products_name": resProductsName, "products": resProducts};
+
+    Dio dio = Dio();
+
+    await dio
+        .patch(
+      '$baseURL/api/inventory/detail/$idInventory',
+      options: Options(headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+        HttpHeaders.authorizationHeader: "Bearer $accessToken"
+      }),
+      data: jsonEncode(data),
+    )
+        .then(((response) {
+      print("Product Added");
+      Navigator.pop(context);
+    })).catchError(((e) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Error',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Text(e.toString()),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Ok'),
+              ),
+            ],
+          );
+        },
+      );
+    }));
+
+    print(data);
+  } else {
+    print("Ya existe el contenido");
+  }
 }
