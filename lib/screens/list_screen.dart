@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:stock_control/screens/components/app_bar.dart';
 import 'package:stock_control/screens/components/label_inventory.dart';
 import 'package:stock_control/services/auth_request.dart';
 import 'package:stock_control/services/inv_request.dart';
+import 'package:stock_control/services/notification_service.dart';
 
 class ListScreen extends StatefulWidget {
   final String accessToken, refreshToken;
@@ -23,6 +25,11 @@ class _ListScreenState extends State<ListScreen> {
   @override
   void initState() {
     super.initState();
+    FlutterLocalNotificationsPlugin().initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      ),
+    );
     _loadInventory();
   }
 
@@ -33,6 +40,7 @@ class _ListScreenState extends State<ListScreen> {
       _listInvOwner = listInvOwner;
       _isLoading = false;
     });
+    _verifyStockNotification();
   }
 
   void _onOptionSelected(int index) {
@@ -48,6 +56,29 @@ class _ListScreenState extends State<ListScreen> {
     Navigator.pop(context);
   }
 
+  void _verifyStockNotification() {
+    List<String> notifyInvStock = [];
+
+    if (_listInvOwner.isNotEmpty) {
+      for (var objeto in _listInvOwner) {
+        dynamic cantidades = objeto['products'];
+        for (var elemento in cantidades) {
+          if (elemento == 0) {
+            notifyInvStock.add(objeto['name']);
+            break;
+          }
+        }
+      }
+    }
+
+    if (notifyInvStock.isNotEmpty) {
+      NotificationService.showNotification(
+          title: 'Alerta de Stock',
+          body: 'Se han agotado productos en $notifyInvStock',
+          payload: 'sarah.abs');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,6 +89,12 @@ class _ListScreenState extends State<ListScreen> {
           backgroundColor: const Color(0xffe9f2f9),
           child: Column(
             children: [
+              // ElevatedButton(
+              //     onPressed: () {
+              //       getLengthInventory(_userData['refresh_token'], _userData['user']['pk'], context);
+
+              //     },
+              //     child: const Text('Notification')),
               UserAccountsDrawerHeader(
                 accountName: Text(
                   widget.userData['username'],
