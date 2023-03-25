@@ -52,6 +52,65 @@ Future<void> signInUsername(
   }));
 }
 
+Future<void> signUpUsername(
+    BuildContext context, String username, String email, String password, String confirmPassword) async {
+  Dio dio = Dio();
+  var data = {
+    "username": username,
+    "email": email,
+    "password1": password,
+    "password2": confirmPassword
+};
+  await dio
+      .post(
+    '$baseURL/auth/register/',
+    options:
+        Options(headers: {HttpHeaders.contentTypeHeader: "application/json"}),
+    data: jsonEncode(data),
+  )
+      .then(((response) async {
+        showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Registrado',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          // ignore: prefer_const_constructors
+          content: Text('Inicia sesión para continuar'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pushReplacementNamed(context, '/sign_in'),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  })).catchError(((e) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Error',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          // ignore: prefer_const_constructors
+          content: Text(e.toString()),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }));
+}
+
 Future<void> signOut(BuildContext context, String accessToken) async {
   Dio dio = Dio();
   var data = {};

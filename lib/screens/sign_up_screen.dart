@@ -95,7 +95,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15),
-                      child: signUpButton(
+                      child: signUpButton(context, 
                           usernameController, emailController, passController, confirmPassController),
                     ),
                     Padding(

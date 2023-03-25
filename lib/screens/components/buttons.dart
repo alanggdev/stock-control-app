@@ -55,7 +55,10 @@ SizedBox signInButton(
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text('Campos vacíos', style: TextStyle(fontWeight: FontWeight.bold),),
+                title: const Text(
+                  'Campos vacíos',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 content: const Text(
                     'Por favor, ingrese su nombre de usuario y contraseña'),
                 actions: <Widget>[
@@ -68,8 +71,7 @@ SizedBox signInButton(
             },
           );
         } else {
-          signInUsername(
-              context, usernameController.text, passController.text);
+          signInUsername(context, usernameController.text, passController.text);
         }
       },
       style: ElevatedButton.styleFrom(
@@ -88,6 +90,7 @@ SizedBox signInButton(
 }
 
 SizedBox signUpButton(
+    BuildContext context,
     TextEditingController usernameController,
     TextEditingController emailController,
     TextEditingController passController,
@@ -101,11 +104,28 @@ SizedBox signUpButton(
         color: Colors.white,
       ),
       onPressed: () {
-        print('Sign Up Data:');
-        print(usernameController.text);
-        print(emailController.text);
-        print(passController.text);
-        print(confirmPassController.text);
+        if (usernameController.text.isEmpty || emailController.text.isEmpty || passController.text.isEmpty || confirmPassController.text.isEmpty) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text(
+                  'Campos vacíos',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                content: const Text('Verifique sus datos.'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          signUpUsername(context, usernameController.text, emailController.text, passController.text, confirmPassController.text);
+        }
       },
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
