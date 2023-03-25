@@ -34,10 +34,11 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> _loadInventory() async {
-    final listInvOwner = await getInventoryPerOwner(
+    final listOwner = await getInventories(
         widget.userData['pk'], widget.accessToken, context);
+        
     setState(() {
-      _listInvOwner = listInvOwner;
+      _listInvOwner = listOwner;
       _isLoading = false;
     });
     _verifyStockNotification();

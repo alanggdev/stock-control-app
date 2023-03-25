@@ -49,6 +49,41 @@ Future<dynamic> getInventory(
   return inventory;
 }
 
+Future<List<dynamic>> getInventories(
+    int isUser, String accessToken, BuildContext context) async {
+  List<dynamic> listInv = [];
+
+  await getInventoryPerOwner(isUser, accessToken, context).then(
+    (listOwner) async {
+      if (listOwner.isNotEmpty) {
+        for (var inv in listOwner) {
+          listInv.add(inv);
+        }
+      }
+      await getInventoryPerAdmin(isUser, accessToken, context).then(
+        (listAdmin) async {
+          if (listAdmin.isNotEmpty) {
+            for (var inv in listAdmin) {
+              listInv.add(inv);
+            }
+          }
+          await getInventoryPerSeller(isUser, accessToken, context).then(
+            (listSeller) {
+              if (listSeller.isNotEmpty) {
+                for (var inv in listSeller) {
+                  listInv.add(inv);
+                }
+              }
+            },
+          );
+        },
+      );
+    },
+  );
+
+  return listInv;
+}
+
 Future<List<dynamic>> getInventoryPerOwner(
     int idOwner, String accessToken, BuildContext context) async {
   List<dynamic> listInvOwner = [];
@@ -89,6 +124,90 @@ Future<List<dynamic>> getInventoryPerOwner(
     );
   }));
   return listInvOwner;
+}
+
+Future<List<dynamic>> getInventoryPerAdmin(
+    int idAdmin, String accessToken, BuildContext context) async {
+  List<dynamic> listInvAdmin = [];
+
+  final dio = Dio();
+
+  await dio
+      .get(
+    '$baseURL/api/inventory/admin/$idAdmin',
+    options: Options(
+        headers: {HttpHeaders.authorizationHeader: "Bearer $accessToken"}),
+  )
+      .then(((response) {
+    dynamic args = jsonDecode(response.toString());
+    if (args['pay_load'] != 'Not found') {
+      print("GET DETAIL PER ADMIN");
+      listInvAdmin = args['pay_load'];
+    }
+  })).catchError(((e) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Error',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          // ignore: prefer_const_constructors
+          content: Text(e.toString()),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }));
+  return listInvAdmin;
+}
+
+Future<List<dynamic>> getInventoryPerSeller(
+    int idSeller, String accessToken, BuildContext context) async {
+  List<dynamic> listInvSeller = [];
+
+  final dio = Dio();
+
+  await dio
+      .get(
+    '$baseURL/api/inventory/seller/$idSeller',
+    options: Options(
+        headers: {HttpHeaders.authorizationHeader: "Bearer $accessToken"}),
+  )
+      .then(((response) {
+    dynamic args = jsonDecode(response.toString());
+    if (args['pay_load'] != 'Not found') {
+      print("GET DETAIL PER SELLER");
+      listInvSeller = args['pay_load'];
+    }
+  })).catchError(((e) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Error',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          // ignore: prefer_const_constructors
+          content: Text(e.toString()),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }));
+  return listInvSeller;
 }
 
 Future<void> newInventory(
