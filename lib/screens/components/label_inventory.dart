@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stock_control/screens/inventory_screen.dart';
+import 'package:stock_control/screens/user_role.dart';
 import 'package:stock_control/services/inv_request.dart';
 
 Padding inventoryLabel(BuildContext context, IconData icon, String title,
@@ -126,7 +127,7 @@ Future<dynamic> createInventory(
 }
 
 Padding cardConfigSensible(BuildContext context, String title, String stitle,
-    String action, String route, dynamic product, String accessToken) {
+    String action, dynamic product, String accessToken) {
   return Padding(
     padding: const EdgeInsets.only(left: 8, right: 8),
     child: Row(
@@ -184,7 +185,6 @@ Padding cardConfigSensible(BuildContext context, String title, String stitle,
                           style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () {
-                          // Navigator.of(context).pop();
                           deleteInventory(context, accessToken, product['id']);
                         },
                       ),
@@ -193,11 +193,16 @@ Padding cardConfigSensible(BuildContext context, String title, String stitle,
                 },
               );
             } else {
-              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          UserRole('Administradores', accessToken, product)));
             }
           },
           style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Colors.red), // borde del botón
+            side: const BorderSide(
+                color: Color.fromARGB(255, 124, 124, 124)), // borde del botón
             backgroundColor: Colors.white, // color de fondo del botón
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
@@ -206,7 +211,7 @@ Padding cardConfigSensible(BuildContext context, String title, String stitle,
           child: Text(
             action,
             style: const TextStyle(
-              color: Colors.red, // color del texto
+              color: Color.fromARGB(255, 124, 124, 124), // color del texto
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -325,7 +330,7 @@ Future<void> addProductLabel(
   );
 }
 
-Future<dynamic> removeProductLabel(BuildContext context, String accessToken,
+Future<void> removeProductLabel(BuildContext context, String accessToken,
     int idInventory, String nameProduct) {
   return showDialog(
     context: context,
@@ -359,6 +364,53 @@ Future<dynamic> removeProductLabel(BuildContext context, String accessToken,
                 fontWeight: FontWeight.bold,
               ),
             ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<dynamic> confirmDialogLabel(BuildContext context, String accessToken,
+    int idInventory, String username, String typeUser) {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text(
+          'Confirmación',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: const Text('¿Está seguro de que desea remover este usuario?'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.black),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.red), // borde del botón
+              backgroundColor: Colors.red, // color de fondo del botón
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
+            child: const Text(
+              'Eliminar',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              if (typeUser == "Seller") {
+                removeUserSeller(context, accessToken, idInventory, username);
+              } else if (typeUser == "Admin") {
+                removeUserAdmin(context, accessToken, idInventory, username);
+              }
+            },
           ),
         ],
       );

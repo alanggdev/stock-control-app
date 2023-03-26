@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:stock_control/screens/inventory_screen.dart';
-import 'package:stock_control/services/data.dart';
 
 String baseURL = 'http://3.138.119.212';
 
@@ -23,6 +22,7 @@ Future<dynamic> getInventory(
     dynamic args = jsonDecode(response.toString());
     if (args['pay_load'] != 'Not found') {
       print("Get detail");
+      print(args['pay_load'].toString());
       inventory = args['pay_load'];
     }
   })).catchError(((e) {
@@ -388,7 +388,15 @@ Future<void> removeProduct(BuildContext context, String accessToken,
       data: jsonEncode(data),
     )
         .then(((response) {
-      print("Product Deleted");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Producto eliminado, actualice la vista para ver los cambios.',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.amber[800],
+        ),
+      );
       Navigator.pop(context);
     })).catchError(((e) {
       showDialog(
@@ -463,4 +471,560 @@ Future<void> updateCantProduct(
       },
     );
   }));
+}
+
+Future<void> searchIdByUsername(BuildContext context, String accessToken,
+    String username, int idInventory) async {
+  final dio = Dio();
+
+  await dio
+      .get(
+    '$baseURL/api/inventory/user/$username',
+    options: Options(
+        headers: {HttpHeaders.authorizationHeader: "Bearer $accessToken"}),
+  )
+      .then(((response) {
+    dynamic args = jsonDecode(response.toString());
+    if (args['pay_load'] != 'Not found') {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Buscar',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            // ignore: prefer_const_constructors
+            content: SizedBox(
+              height: 130,
+              child: Column(
+                children: [
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      side: const BorderSide(
+                        color: Color.fromARGB(223, 221, 218, 218),
+                        width: 2.0,
+                      ),
+                    ),
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                      ),
+                      title: Text(
+                        username,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: const Text('Encontrado'),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () {
+                          addUserSeller(context, accessToken, idInventory,
+                              int.parse(args['pay_load'].toString()));
+                        },
+                        style: OutlinedButton.styleFrom(
+                          // borde del botón
+                          backgroundColor: const Color(
+                              0xffff8e00), // color de fondo del botón
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        child: const Text(
+                          'Vendedor',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      OutlinedButton(
+                        onPressed: () {
+                          addUserAdmin(context, accessToken, idInventory,
+                              int.parse(args['pay_load'].toString()));
+                        },
+                        style: OutlinedButton.styleFrom(
+                          // borde del botón
+                          backgroundColor: const Color(
+                              0xffff8e00), // color de fondo del botón
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        child: const Text(
+                          'Gerente',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text(
+                  'Cancelar',
+                  style: TextStyle(color: Colors.black),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Buscar',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            // ignore: prefer_const_constructors
+            content: SizedBox(
+              height: 80,
+              child: Center(
+                child: Column(
+                  children: [
+                    Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        side: const BorderSide(
+                          color: Color.fromARGB(223, 221, 218, 218),
+                          width: 2.0,
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.cancel,
+                          color: Colors.red,
+                        ),
+                        title: Text(
+                          username,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: const Text('No encontrado'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text(
+                  'Cancelar',
+                  style: TextStyle(color: Colors.black),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  })).catchError(((e) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Error',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          // ignore: prefer_const_constructors
+          content: Text(e.toString()),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }));
+}
+
+Future<List<String>> searchUsername(
+    BuildContext context, String accessToken, dynamic listUsers) async {
+  List<String> username = [];
+
+  if (listUsers.isNotEmpty) {
+    for (int userId in listUsers) {
+      Dio dio = Dio();
+      await dio
+          .get(
+        '$baseURL/api/inventory/username/$userId',
+        options: Options(
+            headers: {HttpHeaders.authorizationHeader: "Bearer $accessToken"}),
+      )
+          .then(((response) {
+        dynamic args = jsonDecode(response.toString());
+        username.add(args['pay_load'].toString());
+      })).catchError(((e) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text(
+                'Error',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              // ignore: prefer_const_constructors
+              content: Text(e.toString()),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          },
+        );
+      }));
+    }
+  }
+  return username;
+}
+
+Future<void> addUserAdmin(BuildContext context, String accessToken,
+    int idInventory, int idUser) async {
+  dynamic invDetail = await getInventory(context, accessToken, idInventory);
+
+  List<dynamic> resAdminsList = invDetail['admins'];
+
+  if (!resAdminsList.contains(idUser)) {
+    print("No existe el contenido");
+    resAdminsList.add(idUser);
+    var data = {"admins": resAdminsList};
+
+    Dio dio = Dio();
+
+    await dio
+        .patch(
+      '$baseURL/api/inventory/detail/$idInventory',
+      options: Options(headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+        HttpHeaders.authorizationHeader: "Bearer $accessToken"
+      }),
+      data: jsonEncode(data),
+    )
+        .then(((response) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Usuario agregado, actualice la vista para ver los cambios.',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    })).catchError(((e) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Error',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Text(e.toString()),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Ok'),
+              ),
+            ],
+          );
+        },
+      );
+    }));
+  } else {
+    // ignore: use_build_context_synchronously
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Este usuario ya es miembro del inventario.',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+Future<void> removeUserAdmin(BuildContext context, String accessToken,
+    int idInventory, String username) async {
+  final dio = Dio();
+  await dio
+      .get(
+    '$baseURL/api/inventory/user/$username',
+    options: Options(
+        headers: {HttpHeaders.authorizationHeader: "Bearer $accessToken"}),
+  )
+      .then(
+    (response) async {
+      dynamic args = jsonDecode(response.toString());
+      dynamic invDetail = await getInventory(context, accessToken, idInventory);
+      List<dynamic> resAdminsList = invDetail['admins'];
+      int indexRemove = resAdminsList.indexOf(args['pay_load']);
+      resAdminsList.removeAt(indexRemove);
+      var data = {"admins": resAdminsList};
+      await dio
+          .patch(
+        '$baseURL/api/inventory/detail/$idInventory',
+        options: Options(headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+          HttpHeaders.authorizationHeader: "Bearer $accessToken"
+        }),
+        data: jsonEncode(data),
+      )
+          .then(((response) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Usuario eliminado, actualice la vista para ver los cambios.',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+      })).catchError(((e) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text(
+                'Error',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Text(e.toString()),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          },
+        );
+      }));
+    },
+  ).catchError(((e) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Error',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Text(e.toString()),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }));
+}
+
+Future<void> addUserSeller(BuildContext context, String accessToken,
+    int idInventory, int idUser) async {
+  dynamic invDetail = await getInventory(context, accessToken, idInventory);
+
+  List<dynamic> resSellerList = invDetail['sellers'];
+
+  if (!resSellerList.contains(idUser)) {
+    print("No existe el contenido");
+    resSellerList.add(idUser);
+    var data = {"sellers": resSellerList};
+
+    Dio dio = Dio();
+
+    await dio
+        .patch(
+      '$baseURL/api/inventory/detail/$idInventory',
+      options: Options(headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+        HttpHeaders.authorizationHeader: "Bearer $accessToken"
+      }),
+      data: jsonEncode(data),
+    )
+        .then(((response) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Usuario agregado, actualice la vista para ver los cambios.',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    })).catchError(((e) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Error',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Text(e.toString()),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Ok'),
+              ),
+            ],
+          );
+        },
+      );
+    }));
+  } else {
+    // ignore: use_build_context_synchronously
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Este usuario ya es miembro del inventario.',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+Future<void> removeUserSeller(BuildContext context, String accessToken,
+    int idInventory, String username) async {
+  final dio = Dio();
+  await dio
+      .get(
+    '$baseURL/api/inventory/user/$username',
+    options: Options(
+        headers: {HttpHeaders.authorizationHeader: "Bearer $accessToken"}),
+  )
+      .then(
+    (response) async {
+      dynamic args = jsonDecode(response.toString());
+      dynamic invDetail = await getInventory(context, accessToken, idInventory);
+      List<dynamic> resASellersList = invDetail['sellers'];
+      int indexRemove = resASellersList.indexOf(args['pay_load']);
+      resASellersList.removeAt(indexRemove);
+      var data = {"sellers": resASellersList};
+      await dio
+          .patch(
+        '$baseURL/api/inventory/detail/$idInventory',
+        options: Options(headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+          HttpHeaders.authorizationHeader: "Bearer $accessToken"
+        }),
+        data: jsonEncode(data),
+      )
+          .then(((response) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Usuario eliminado, actualice la vista para ver los cambios.',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+      })).catchError(((e) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text(
+                'Error',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Text(e.toString()),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          },
+        );
+      }));
+    },
+  ).catchError(((e) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Error',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Text(e.toString()),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }));
+}
+
+Future<dynamic> getUserInfo(
+    BuildContext context, String accessToken) async {
+  dynamic userInfo = [];
+  final dio = Dio();
+
+  await dio
+      .get(
+    '$baseURL/auth/user/',
+    options: Options(
+        headers: {HttpHeaders.authorizationHeader: "Bearer $accessToken"}),
+  )
+      .then(((response) {
+    dynamic args = jsonDecode(response.toString());
+    print(args.toString());
+    userInfo = args;
+  })).catchError(((e) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Error',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          // ignore: prefer_const_constructors
+          content: Text(e.toString()),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }));
+  return userInfo;
 }

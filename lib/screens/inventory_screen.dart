@@ -16,6 +16,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
   int _selectedIndex = 0;
   bool _isLoading = true;
   dynamic _invDetail = [];
+  bool canAccessProducts = false;
+  bool canAccessEdit = false;
+  bool canAccessSettings = false;
 
   @override
   void initState() {
@@ -24,21 +27,55 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   Future<void> _loadDetailInventory() async {
-    final inventoryDetail = await getInventory(
+    await getInventory(
       context,
       widget.accessToken,
       widget.product['id'],
+    ).then(
+      (inventoryDetail) async {
+        await getUserInfo(context, widget.accessToken).then(
+          (userInfo) {
+            setState(() {
+              _invDetail = inventoryDetail;
+              if (_invDetail['owner'] == userInfo['pk']) {
+                canAccessProducts = true;
+                canAccessEdit = true;
+                canAccessSettings = true;
+              } else if (_invDetail['admins'].contains(userInfo['pk'])) {
+                canAccessProducts = true;
+                canAccessEdit = true;
+              } else if (_invDetail['sellers'].contains(userInfo['pk'])) {
+                canAccessProducts = true;
+              }
+              _isLoading = false;
+            });
+          },
+        );
+      },
     );
-    setState(() {
-      _invDetail = inventoryDetail;
-      _isLoading = false;
-    });
   }
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 0 && canAccessProducts) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    } else if (index == 1 && canAccessEdit) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    } else if (index == 2 && canAccessSettings) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    } else {
+      // Mostrar mensaje de error
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No tienes permiso para acceder a esta vista'),
+        ),
+      );
+    }
   }
 
   @override
@@ -72,6 +109,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
+    // bool accesoPermitido = (_invDetail['owner'].toString() == _userData['pk'].toString());
     switch (_selectedIndex) {
       case 0:
         return Stack(
@@ -87,7 +125,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     Text('Cargando...'),
                   ],
                 ),
-              )
+              ),
           ],
         );
       case 1:
@@ -110,18 +148,65 @@ class _InventoryScreenState extends State<InventoryScreen> {
       case 2:
         return Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
-                Text(
-                  'Configuración Sensible',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            titleMenu(Icons.settings, 'Ajustes de Inventario'),
+            // Text(_invDetail.toString()),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Usuarios',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Center(
+                child: Card(
+                  color: const Color.fromARGB(255, 238, 238, 238),
+                  elevation: 0,
+                  shape: const RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: Color.fromARGB(255, 124, 124, 124),
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                  child: SizedBox(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        cardConfigSensible(
+                            context,
+                            'Permisos de Usuarios',
+                            'Agregar, eliminar y actualizar productos',
+                            'Gestionar',
+                            _invDetail,
+                            widget.accessToken),
+                      ],
+                    ),
+                  ),
                 ),
-              ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Configuración Sensible',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
             Center(
               child: Card(
-                color: const Color.fromARGB(255, 214, 214, 214),
+                color: const Color.fromARGB(255, 238, 238, 238),
                 elevation: 0,
                 shape: const RoundedRectangleBorder(
                   side: BorderSide(
@@ -135,27 +220,41 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     children: [
                       cardConfigSensible(
                           context,
-                          'Cambiar nombre',
-                          'Todos los usuarios asociados sufriran cambios..',
-                          'Modificar',
-                          '/ruta',
-                          widget.product,
-                          widget.accessToken),
-                      const Divider(
-                        thickness: 1,
-                        color: Color.fromARGB(255, 124, 124, 124),
-                      ),
-                      cardConfigSensible(
-                          context,
                           'Eliminar inventario',
                           'Una vez eliminado, no se podrá recuperar.',
                           'Eliminar',
-                          '/ruta',
                           widget.product,
                           widget.accessToken),
                     ],
                   ),
                 ),
+              ),
+            ),
+            Expanded(child: Container()),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 2;
+                  if (_selectedIndex == 2) {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    _loadDetailInventory();
+                  }
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 148, 148, 148),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Row(
+                children: const [
+                  Icon(Icons.refresh),
+                  SizedBox(width: 12),
+                  Text('Actualizar lista'),
+                ],
               ),
             ),
           ],

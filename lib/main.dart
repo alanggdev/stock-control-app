@@ -22,8 +22,6 @@ class Home extends StatelessWidget {
         '/auth_scren' : ((context) => const AuthScreen()),
         '/sign_in' : ((context) => const SignIn()),
         '/sign_up' : ((context) => const SignUp()),
-        // '/list_screen' : ((context) => const ListScreen()),
-        // '/inv_screen' : ((context) => const InventoryScreen()),
       },
       home: const AuthScreen(),
     );
