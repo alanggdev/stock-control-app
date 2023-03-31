@@ -122,39 +122,39 @@ class _ListScreenState extends State<ListScreen> {
                   });
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.account_box),
-                title: const Text('Cuenta'),
-                selected: _selectedOptionIndex == 1,
-                onTap: () {
-                  _onOptionSelected(1);
-                  setState(() {
-                    _currentIndex = 1;
-                  });
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.notifications),
-                title: const Text('Notificaciones'),
-                selected: _selectedOptionIndex == 2,
-                onTap: () {
-                  _onOptionSelected(2);
-                  setState(() {
-                    _currentIndex = 2;
-                  });
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Configuración'),
-                selected: _selectedOptionIndex == 3,
-                onTap: () {
-                  _onOptionSelected(3);
-                  setState(() {
-                    _currentIndex = 3;
-                  });
-                },
-              ),
+              // ListTile(
+              //   leading: const Icon(Icons.account_box),
+              //   title: const Text('Cuenta'),
+              //   selected: _selectedOptionIndex == 1,
+              //   onTap: () {
+              //     _onOptionSelected(1);
+              //     setState(() {
+              //       _currentIndex = 1;
+              //     });
+              //   },
+              // ),
+              // ListTile(
+              //   leading: const Icon(Icons.notifications),
+              //   title: const Text('Notificaciones'),
+              //   selected: _selectedOptionIndex == 2,
+              //   onTap: () {
+              //     _onOptionSelected(2);
+              //     setState(() {
+              //       _currentIndex = 2;
+              //     });
+              //   },
+              // ),
+              // ListTile(
+              //   leading: const Icon(Icons.settings),
+              //   title: const Text('Configuración'),
+              //   selected: _selectedOptionIndex == 3,
+              //   onTap: () {
+              //     _onOptionSelected(3);
+              //     setState(() {
+              //       _currentIndex = 3;
+              //     });
+              //   },
+              // ),
               const Spacer(),
               Container(
                 color: const Color.fromARGB(255, 216, 78, 75),

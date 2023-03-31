@@ -62,7 +62,7 @@ class _UserRoleState extends State<UserRole> {
         padding: const EdgeInsets.all(25),
         child: Column(
           children: [
-            textField('Ingrese nombre de usuario', usernameController),
+            textField('Ingrese nombre de usuario', usernameController, false),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: ElevatedButton(

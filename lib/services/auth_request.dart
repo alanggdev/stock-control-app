@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stock_control/screens/list_screen.dart';
 
-String baseURL = 'http://3.138.119.212';
+String baseURL = 'http://3.22.66.38';
 
 Future<void> signInUsername(
     BuildContext context, String username, String password) async {

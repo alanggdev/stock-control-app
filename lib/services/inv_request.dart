@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:stock_control/screens/inventory_screen.dart';
 
-String baseURL = 'http://3.138.119.212';
+String baseURL = 'http://3.22.66.38';
 
 Future<dynamic> getInventory(
     BuildContext context, String accessToken, int idInventory) async {

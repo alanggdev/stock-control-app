@@ -65,7 +65,7 @@ class _SignInState extends State<SignIn> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15),
-                      child: textField('Usuario', usernameController),
+                      child: textField('Usuario', usernameController, false),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 2),
@@ -73,7 +73,7 @@ class _SignInState extends State<SignIn> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20),
-                      child: textField('Clave', passController),
+                      child: textField('Clave', passController, true),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15),

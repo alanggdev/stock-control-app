@@ -16,9 +16,10 @@ Row inputLabel(String text) {
   );
 }
 
-TextField textField(String text, TextEditingController fieldContoller) {
+TextField textField(String text, TextEditingController fieldContoller, bool protect) {
   return TextField(
     controller: fieldContoller,
+    obscureText: protect,
     decoration: InputDecoration(
       filled: true,
       fillColor: const Color.fromARGB(173, 219, 219, 219),

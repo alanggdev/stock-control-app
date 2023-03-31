@@ -67,7 +67,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15),
-                      child: textField('Usuario', usernameController),
+                      child: textField('Usuario', usernameController, false),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 2),
@@ -75,7 +75,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15),
-                      child: textField('Correo electrónico', emailController),
+                      child: textField('Correo electrónico', emailController, false),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 2),
@@ -83,7 +83,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15),
-                      child: textField('Clave', passController),
+                      child: textField('Clave', passController, true),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 2),
@@ -91,7 +91,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20),
-                      child: textField('Confirmar clave', confirmPassController),
+                      child: textField('Confirmar clave', confirmPassController, true),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15),
